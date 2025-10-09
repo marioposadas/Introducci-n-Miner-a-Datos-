@@ -1,0 +1,139 @@
+library(readxl)
+library(arules)
+
+datos <- read_excel("D:\\Maestría Ciencias de la Computación\\IV TRIMESTRE\\Introducción a la minería de datos\\Ejercicio 1\\graduados-superior-2023.xlsx")
+
+datos_trans <- as(datos, "transactions")
+
+reglas <- apriori(datos_trans, parameter = list(support = 0.2, confidence = 0.5))
+
+inspect(reglas[0:130])
+
+data.frame(1:ncol(datos), colnames(datos))
+datos <- datos[, -1]
+reglas_2 <- apriori(datos, parameter = list(support=0.2, confidence = 0.5)) 
+inspect(reglas_2[0:44])
+
+
+datos_tecnico <- subset(datos, Nivel_Educativo == "Técnico")
+data.frame(1:ncol(datos_tecnico), colnames(datos))
+datos_tecnico <- datos_tecnico[, -3]
+reglas_3 <- apriori(datos_tecnico, parameter = list(support=0.2, confidence = 0.5)) 
+inspect(reglas_3[0:25])
+
+datos_licenciatura <- subset(datos, Nivel_Educativo == "Licenciatura")
+data.frame(1:ncol(datos_licenciatura), colnames(datos_licenciatura))
+datos_licenciatura <- datos_licenciatura[, -7]
+reglas_4 <- apriori(datos_licenciatura, parameter = list(support=0.2, confidence = 0.4)) 
+inspect(reglas_4[0:16])
+
+
+datos_meastria <- subset(datos, Nivel_Educativo == "Maestría")
+data.frame(1:ncol(datos_meastria), colnames(datos_meastria))
+datos_meastria <- datos_meastria[, -7]
+reglas_5 <- apriori(datos_meastria, parameter = list(support=0.2, confidence = 0.5)) 
+inspect(reglas_5[0:36])
+
+
+datos_doctorado <- subset(datos, Nivel_Educativo == "Doctorado")
+data.frame(1:ncol(datos_doctorado), colnames(datos_doctorado))
+datos_doctorado <- datos_doctorado[, -3]
+reglas_6 <- apriori(datos_doctorado, parameter = list(support=0.15, confidence = 0.5)) 
+inspect(reglas_6[0:150])
+
+
+
+unique(datos$Pueblo_Pertenencia)
+
+
+# --- ladino ---
+datos_ladino <- subset(datos, Pueblo_Pertenencia == "Ladino")
+data.frame(1:ncol(datos_ladino), colnames(datos_ladino))
+datos_ladino <- datos_ladino[, -7]
+reglas_ladino <- apriori(datos_ladino, parameter = list(support=0.2, confidence=0.4))
+inspect(reglas_ladino[0:20])
+
+
+# --- Ingorado ---
+datos_ignorado <- subset(datos, Pueblo_Pertenencia == "Ignorado")
+data.frame(1:ncol(datos_ignorado), colnames(datos_ignorado))
+datos_ignorado <- datos_ignorado[, -7]
+reglas_ignorado <- apriori(datos_ignorado, parameter = list(support=0.2, confidence=0.4))
+inspect(reglas_ignorado[0:20])
+
+# --- Extranjero ---
+datos_extranjero <- subset(datos, Pueblo_Pertenencia == "Extranjero")
+data.frame(1:ncol(datos_extranjero), colnames(datos_extranjero))
+datos_extranjero <- datos_extranjero[, -7]
+reglas_extranjero <- apriori(datos_extranjero, parameter = list(support=0.2, confidence=0.4))
+inspect(reglas_extranjero[0:20])
+
+# --- Maya ---
+datos_maya <- subset(datos, Pueblo_Pertenencia == "Maya")
+data.frame(1:ncol(datos_maya), colnames(datos_maya))
+datos_maya <- datos_maya[, -7]
+reglas_maya <- apriori(datos_maya, parameter = list(support=0.2, confidence=0.4))
+inspect(reglas_maya[0:20])
+
+# --- Garífuna ---
+datos_garifuna <- subset(datos, Pueblo_Pertenencia == "Garífuna")
+data.frame(1:ncol(datos_garifuna), colnames(datos_garifuna))
+datos_garifuna <- datos_garifuna[, -7]
+reglas_garifuna <- apriori(datos_garifuna, parameter = list(support=0.2, confidence=0.4))
+inspect(reglas_garifuna[0:20])
+
+# --- Xinka ---
+datos_xinka <- subset(datos, Pueblo_Pertenencia == "Xinka")
+data.frame(1:ncol(datos_xinka), colnames(datos_xinka))
+datos_xinka <- datos_xinka[, -7]
+reglas_xinka <- apriori(datos_xinka, parameter = list(support=0.2, confidence=0.4))
+inspect(reglas_xinka[0:20])
+
+install.packages("arulesViz")
+
+library(arulesViz)
+
+# Filtrar reglas con alta confianza y alta fuerza de asociación
+reglas_xinka_fuertes <- subset(reglas_xinka, subset = confidence > 0.7 & lift > 1.5)
+
+# Ver las 10 primeras
+inspect(head(reglas_xinka_fuertes, 10))
+
+plot(reglas_xinka_fuertes, measure = c("support", "confidence"), shading = "lift")
+
+inspect(sort(reglas_xinka_fuertes, by = "lift")[1:10])
+
+# Instalar paquetes si no los tienes
+#install.packages(c("arules", "arulesViz"))
+library(arules)
+library(arulesViz)
+
+# --- LADINO ---
+plot(reglas_ladino, method = "graph", engine = "htmlwidget",
+     shading = "lift", main = "Red de reglas - Pueblo Ladino")
+
+# --- IGNORADO ---
+plot(reglas_ignorado, method = "graph", engine = "htmlwidget",
+     shading = "lift", main = "Red de reglas - Pueblo Ignorado")
+
+# --- EXTRANJERO ---
+plot(reglas_extranjero, method = "graph", engine = "htmlwidget",
+     shading = "lift", main = "Red de reglas - Pueblo Extranjero")
+
+# --- MAYA ---
+plot(reglas_maya, method = "graph", engine = "htmlwidget",
+     shading = "lift", main = "Red de reglas - Pueblo Maya")
+
+# --- GARÍFUNA ---
+plot(reglas_garifuna, method = "graph", engine = "htmlwidget",
+     shading = "lift", main = "Red de reglas - Pueblo Garífuna")
+
+# Si prefieres un gráfico de dispersión:
+plot(reglas_ladino, measure = c("support", "confidence"), shading = "lift")
+plot(reglas_ignorado, measure = c("support", "confidence"), shading = "lift")
+plot(reglas_extranjero, measure = c("support", "confidence"), shading = "lift")
+plot(reglas_maya, measure = c("support", "confidence"), shading = "lift")
+plot(reglas_garifuna, measure = c("support", "confidence"), shading = "lift")
+
+plot(reglas_xinka, measure = c("support", "confidence"), shading = "lift")
+
