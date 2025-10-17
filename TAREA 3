@@ -16,7 +16,7 @@ data_fp2 <- datos[, c("OTRAS_VICTIMAS", "VIC_OTRAS_HOM", "VIC_OTRAS_MUJ", "HEC_R
 reglas_fp2 <- fim4r(data_fp2, method = "fpgrowth", target = "rules", supp = 0.2, conf = 0.5)
 rf2 <- as(reglas_fp2, "data.frame")
 
-# Regla 3: Perfil del agresor y ley aplicada
-data_fp3 <- datos[, c("AGR_SEXO", "AGR_TRABAJA", "AGR_DEDICA", "LEY_APLICABLE", "ARTICULOCODPEN1")]
-reglas_fp3 <- fim4r(data_fp3, method = "fpgrowth", target = "rules", supp = 0.2, conf = 0.5)
-rf3 <- as(reglas_fp3, "data.frame")
+# Regla 3: Edades, relación y tipo agresión
+data_fp_completo <- datos[, c("HEC_TIPAGRE", "VIC_EDAD", "VIC_REL_AGR", "VIC_GRUPET", "MEDIDAS_SEGURIDAD")]
+reglas_fp_completo <- fim4r(data_fp_completo, method = "fpgrowth", target = "rules", supp = 0.2, conf = 0.5)
+rf_completo <- as(reglas_fp_completo, "data.frame")
