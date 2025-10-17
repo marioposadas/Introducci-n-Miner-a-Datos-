@@ -1,0 +1,22 @@
+
+library(readxl)
+library(arules)
+library(fim4r)
+
+data <- "D:/Maestría Ciencias de la Computación/IV TRIMESTRE/Introducción a la minería de datos/Tarea 3/Violencia-intrafamiliar-2024.xlsx"
+datos <- read_excel(data)
+
+# Regla 1: Tipo de agresión, relación y medidas
+data_fp1 <- datos[, c("HEC_TIPAGRE", "VIC_REL_AGR", "MEDIDAS_SEGURIDAD", "TIPO_MEDIDA")]
+reglas_fp1 <- fim4r(data_fp1, method = "fpgrowth", target = "rules", supp = 0.2, conf = 0.5)
+rf1 <- as(reglas_fp1, "data.frame")
+
+# Regla 2: Otras víctimas y denuncia
+data_fp2 <- datos[, c("OTRAS_VICTIMAS", "VIC_OTRAS_HOM", "VIC_OTRAS_MUJ", "HEC_RECUR_DENUN", "INST_DONDE_DENUNCIO")]
+reglas_fp2 <- fim4r(data_fp2, method = "fpgrowth", target = "rules", supp = 0.2, conf = 0.5)
+rf2 <- as(reglas_fp2, "data.frame")
+
+# Regla 3: Perfil del agresor y ley aplicada
+data_fp3 <- datos[, c("AGR_SEXO", "AGR_TRABAJA", "AGR_DEDICA", "LEY_APLICABLE", "ARTICULOCODPEN1")]
+reglas_fp3 <- fim4r(data_fp3, method = "fpgrowth", target = "rules", supp = 0.2, conf = 0.5)
+rf3 <- as(reglas_fp3, "data.frame")
