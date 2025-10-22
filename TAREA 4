@@ -1,0 +1,48 @@
+#librerías
+
+library(klaR)
+library(dplyr)
+
+# Archivo
+data <- read_excel("D:/Maestría Ciencias de la Computación/IV TRIMESTRE/Introducción a la minería de datos/Tarea 3/Violencia-intrafamiliar-2024.xlsx")
+
+
+# Variables numéricas + HEC_TIPAGRE
+data_num <- data[, c("VIC_EDAD", "TOTAL_HIJOS", "VIC_ESCOLARIDAD", "VIC_EST_CIV",
+                     "AGR_EDAD", "AGR_ESCOLARIDAD", "AGR_EST_CIV", "HEC_TIPAGRE")]
+
+# Caracteres a numérico
+data_num[] <- lapply(data_num, function(x) {
+  if (is.factor(x) || is.character(x)) {
+    as.numeric(as.factor(x))  # codifica categorías como 1,2,3...
+  } else {
+    as.numeric(x)
+  }
+})
+
+# Eliminar filas con NA
+data_num <- na.omit(data_num)
+
+# Escalar variables
+data_scaled <- scale(data_num)
+
+# Aplicar k-means
+set.seed(123)
+cluster_num <- kmeans(data_scaled, centers = 5)
+
+# Agregar cluster al dataset
+data_num$cluster <- as.factor(cluster_num$cluster)
+
+# Visualización: Edad víctima vs Edad agresor
+library(ggplot2)
+ggplot(data_num, aes(x = VIC_EDAD, y = AGR_EDAD, color = cluster)) +
+  geom_point(alpha = 0.7, size = 3) +
+  geom_point(data = as.data.frame(cluster_num$centers), 
+             aes(x = VIC_EDAD, y = AGR_EDAD), 
+             color = "black", size = 5, shape = 17) +
+  labs(title = "Clusters numéricos con tipo de agresión",
+       x = "Edad víctima", y = "Edad agresor") +
+  theme_minimal()
+
+# Tabla de distribución de clusters por tipo de agresión
+table(data_num$cluster, data_num$HEC_TIPAGRE)
