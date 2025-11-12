@@ -1,0 +1,109 @@
+install.packages("arules")
+library(arules)
+install.packages("genero")
+library(genero)
+install.packages("rpart")
+install.packages("rpart.plot")
+
+library(rpart)
+library(rpart.plot)
+
+library(readxl)
+
+# Importa el archivo Excel
+data <- read_excel("D:/Desktop/Maestría Ciencias de la Computación/IV TRIMESTRE/Introducción a la minería de datos/Tarea 5/violencia-intrafamiliar-INE-2024.xlsx")
+
+data$ciudad = ifelse(data$HEC_DEPTO == 1, 1, 0)
+
+data.frame(1:ncol(data), colnames(data))
+
+arbol <- rpart(ciudad ~
+                 VIC_SEXO +
+                 VIC_EDAD +
+                 VIC_TRABAJA +
+                 VIC_DEDICA +
+                 VIC_ESCOLARIDAD,
+               data = data, method = "class"
+               )
+
+rpart.plot(arbol, type = 2, extra = 0, under = TRUE, fallen.leaves = TRUE, box.palette = "BuGn",
+           main="Ciudad o no", cex = 0.5)
+
+persona <- data.frame(
+  VIC_SEXO =c(2),
+    VIC_EDAD = c(25),
+    VIC_TRABAJA =(2),
+    VIC_DEDICA = c(3),
+    VIC_ESCOLARIDAD = c(57)
+)
+
+result <- predict(arbol, persona, type = "prob")
+result
+
+arbol2 <- rpart(HEC_DEPTO ~
+                 VIC_SEXO +
+                 VIC_EDAD +
+                 VIC_TRABAJA +
+                 VIC_DEDICA +
+                 VIC_ESCOLARIDAD,
+               data = data, method = "class"
+)
+
+rpart.plot(arbol2, type = 2, extra = 0, under = TRUE, fallen.leaves = TRUE, box.palette = "BuGn",
+           main="Ciudad o no", cex = 0.5)
+
+persona <- data.frame(
+  VIC_SEXO =c(2),
+  VIC_EDAD = c(25),
+  VIC_TRABAJA =(2),
+  VIC_DEDICA = c(3),
+  VIC_ESCOLARIDAD = c(57)
+)
+
+result <- predict(arbol2, persona, type = "prob")
+result
+
+
+
+arbol3 <- rpart(VIC_GRUPET~
+                  VIC_SEXO +
+                  VIC_EDAD +
+                  VIC_TRABAJA +
+                  VIC_DEDICA +
+                  VIC_ESCOLARIDAD,
+                data = data, method = "class"
+)
+
+rpart.plot(arbol3, type = 2, extra = 0, under = TRUE, fallen.leaves = TRUE, box.palette = "BuGn",
+           main="Ciudad o no", cex = 0.5)
+
+persona <- data.frame(
+  VIC_SEXO =c(2),
+  VIC_EDAD = c(25),
+  VIC_TRABAJA =(2),
+  VIC_DEDICA = c(3),
+  VIC_ESCOLARIDAD = c(57)
+)
+
+result <- predict(arbol3, persona, type = "prob")
+result
+
+arbol5 <- rpart(ciudad ~
+                  HEC_TIPAGRE +
+                  MEDIDAS_SEGURIDAD +
+                  HEC_RECUR_DENUN +
+                  INST_DONDE_DENUNCIO,
+                data = data, method = "class")
+
+rpart.plot(arbol5, type = 2, extra = 0, under = TRUE, fallen.leaves = TRUE,
+           box.palette = "BuGn", main = "Árbol 5: Ciudad según contexto", cex = 0.5)
+################################################VARIABLE REPORTADA################################################
+persona5 <- data.frame(
+  HEC_TIPAGRE = c(1111),
+  MEDIDAS_SEGURIDAD = c(1),
+  HEC_RECUR_DENUN = c(1),
+  INST_DONDE_DENUNCIO = c(5)
+)
+
+predict(arbol5, persona5, type = "prob")
+result
