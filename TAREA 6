@@ -1,0 +1,68 @@
+
+install.packages("randomForest")
+
+#Carga de libreria
+library(readxl)
+library(randomForest)
+
+
+#carga de data
+data <- read_excel("D:/Desktop/Maestría Ciencias de la Computación/IV TRIMESTRE/Introducción a la minería de datos/Tarea 6/violencia-intrafamiliar-INE-2024.xlsx")
+
+
+datar<-data[,c("HEC_DEPTO","VIC_EDAD","VIC_SEXO","VIC_TRABAJA","VIC_OCUP")]
+datar$HEC_DEPTO<-as.factor(datar$HEC_DEPTO)
+datar<-na.omit(datar)
+
+#Data 
+set.seed(100)
+
+#Testeo y entreno
+datar<-datar[sample(1:nrow(datar)),]
+index <- sample(1:nrow(datar), 0.8*nrow(datar))
+
+train<- datar[index,]
+test<-datar[-index,]
+
+
+
+bosque <- randomForest(HEC_DEPTO ~ 
+        VIC_EDAD +
+        VIC_SEXO+
+        VIC_TRABAJA +
+        VIC_OCUP,
+      data = train, 
+      ntree = 200,
+      mtry = 4
+      )
+
+prueba <- predict(bosque,test)
+prueba
+
+matriz <- table(test$HEC_DEPTO,prueba)
+matriz
+
+#Verificación
+pre <- sum(diag(matriz))/sum(matriz)
+pre
+
+
+
+
+#Predicción
+persona <- data.frame( 
+                         VIC_EDAD = c(20),
+                         VIC_SEXO= c(2),
+                         VIC_TRABAJA= c(1),
+                         VIC_OCUP= c(4413)
+                    )
+
+result2<- predict(bosque,persona,type="prob")
+result2
+
+
+#Grafica
+plot(bosque)
+
+
+
